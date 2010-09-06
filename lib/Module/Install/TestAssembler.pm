@@ -2,7 +2,7 @@ package Module::Install::TestAssembler;
 
 use strict;
 use warnings;
-use vars qw($VERSION $TEST_DYNAMIC);
+use vars qw($VERSION $TEST_DYNAMIC $TEST_TARGET);
 $VERSION = '0.01';
 
 use base qw(Module::Install::Base);
@@ -22,7 +22,8 @@ $TEST_DYNAMIC = {
 
 sub assemble_test {
     my ($self, %args) = @_;
-    my $target = 'test_' . ($args{target} || 'dynamic'); # for `make test`
+    my $target = $args{target} || 'test_dynamic'; # for `make test`
+    my $alias  = $args{alias}  || 'test_dynamic';
 
     for my $key (qw/includes modules before_run_scripts after_run_scripts before_run_codes after_run_codes tests/) {
         $args{$key} ||= [];
@@ -51,7 +52,7 @@ sub assemble_test {
         my $test = _assemble(%test, perl => '$(FULLPERLRUN)');
 
         $self->postamble(
-              qq{test_dynamic :: $target\n\n}
+              qq{$alias :: $target\n\n}
             . qq{$target :: pure_all\n}
             . qq{\t} . $test
         );
@@ -106,7 +107,8 @@ Module::Install::TestAssembler - make test maker
       before_run_codes   => ['print "start -> ", scalar localtime, "\n"'],
       after_run_codes    => ['print "end   -> ", scalar localtime, "\n"'],
       tests              => ['t/baz/*t'],
-      target             => ['foo'],  # create make test_foo target (default test_dunamic)
+      target             => ['foo'],     # create make foo target (default test_dunamic)
+      alias              => ['testall'], # make testall is run the make foo. (default test_dunamic)
   );
   
   # maybe make test is
@@ -128,20 +130,6 @@ Module::Install::TestAssembler is helps make a variety of processing of during t
 =head2 %args
 
 =over 3
-
-=item target
-
-Create a new make test_*.
-
-  use inc::Module::Install;
-  tests 't/*t';
-  assemble_test(
-      before_run_script => 'tool/force-pp.pl',
-      target            => 'pp',
-  );
-  
-  # maybe make test_pp is
-  perl -MExtUtils::Command::MM -e "do 'tool/force-pp.pl'; test_harness(0, 'inc')" t/*t
 
 =item tests
 
@@ -237,6 +225,35 @@ Setting perl codes to run after running the test.
   perl -MExtUtils::Command::MM "test_harness(0, 'inc'); sub { print scalar localtme, "\n" }->(); sub { system 'cat', 'README' }->();" t/*t
 
 The perl codes runs after_run_scripts runs later.
+
+=item target
+
+Create a new make test_*.
+
+  use inc::Module::Install;
+  tests 't/*t';
+  assemble_test(
+      before_run_script => 'tool/force-pp.pl',
+      target            => 'test_pp',
+  );
+  
+  # maybe make test_pp is
+  perl -MExtUtils::Command::MM -e "do 'tool/force-pp.pl'; test_harness(0, 'inc')" t/*t
+
+=item alias
+
+Setting alias of target.
+
+  use inc::Module::Install;
+  tests 't/*t';
+  assemble_test(
+      before_run_script => 'tool/force-pp.pl',
+      target            => 'test_pp',
+      alias             => 'testall',
+  );
+  
+  # maybe make testall is
+  perl -MExtUtils::Command::MM -e "do 'tool/force-pp.pl'; test_harness(0, 'inc')" t/*t
 
 =back
 

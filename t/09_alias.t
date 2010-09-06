@@ -5,9 +5,10 @@ use lib 't/lib';
 use Test::More;
 use t::Util;
 
-ok my $cmd = find_make_test_command(*DATA, 'test_pp'), 'find make test command';
+ok my $cmd = find_make_test_command(*DATA, 'test_pp', 'testall'), 'find make test command';
 unlike $cmd->{test_dynamic}, qr|Foo::Bar|, 'not set modules';
 like $cmd->{test_pp}, qr|Foo::Bar|, 'find module';
+ok exists $cmd->{testall}, 'eixsts testall';
 
 done_testing;
 
@@ -20,7 +21,11 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-assemble_test target => 'test_pp', modules => 'Foo::Bar';
+assemble_test
+    target  => 'test_pp',
+    alias   => 'testall',
+    modules => 'Foo::Bar',
+;
 
 auto_include;
 WriteAll;

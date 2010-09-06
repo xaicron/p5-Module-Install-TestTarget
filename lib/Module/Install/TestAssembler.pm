@@ -12,6 +12,7 @@ use B::Deparse;
 my $bd = B::Deparse->new;
 
 $TEST_DYNAMIC = {
+    env                => '',
     includes           => '',
     modules            => '',
     before_run_codes   => '',
@@ -29,21 +30,24 @@ sub assemble_test {
         $args{$key} ||= [];
         $args{$key} = [$args{$key}] unless ref $args{$key} eq 'ARRAY';
     }
+    $args{env} ||= {};
 
     my %test;
     $test{includes} = @{$args{includes}} ? join '', map { qq|"-I$_" | } @{$args{includes}} : '';
     $test{modules}  = @{$args{modules}}  ? join '', map { qq|"-M$_" | } @{$args{modules}}  : '';
-    $test{tests}    = @{$args{tests}}    ? join '', map { qq|"$_"|    } @{$args{tests}}    : '$(TEST_FILES)';
+    $test{tests}    = @{$args{tests}}    ? join '', map { qq|"$_" |   } @{$args{tests}}    : '$(TEST_FILES)';
     for my $key (qw/before_run_scripts after_run_scripts/) {
         $test{$key} = @{$args{$key}} ? join '', map { qq|do '$_'; | } @{$args{$key}} : '';
     }
     for my $key (qw/before_run_codes after_run_codes/) {
         my $codes = @{$args{$key}} ? join '', map { qq|sub { $_ }->(); | } map { ref $_ eq 'CODE' ? $bd->coderef2text($_) : $_ } @{$args{$key}} : '';
-        $codes =~ s/\$/\\\$\$/g;
-        $codes =~ s/"/\\"/g;
-        $codes =~ s/\n/ /g;
-        $test{$key} = $codes;
+        $test{$key} = _quote($codes);
     }
+    $test{env} = %{$args{env}} ? _quote(join '', map {
+        my $key = _env_quote($_);
+        my $val = _env_quote($args{env}->{$_});
+        sprintf "\$ENV{q{%s}} = q{%s}; ", $key, $val
+    } keys %{$args{env}}) : '';
 
     if ($target eq 'test_dynamic') {
         $TEST_DYNAMIC = \%test;
@@ -59,6 +63,20 @@ sub assemble_test {
     }
 }
 
+sub _quote {
+    my $code = shift;
+    $code =~ s/\$/\\\$\$/g;
+    $code =~ s/"/\\"/g;
+    $code =~ s/\n/ /g;
+    return $code;
+}
+
+sub _env_quote {
+    my $val = shift;
+    $val =~ s/}/\\}/g;
+    return $val;
+}
+
 sub _assemble {
     my %args = @_;
 
@@ -67,6 +85,7 @@ sub _assemble {
         . $args{includes}
         . $args{modules}
         . qq{"-e" "}
+        . $args{env}
         . $args{before_run_scripts}
         . $args{before_run_codes}
         . qq{test_harness(\$(TEST_VERBOSE), '\$(INST_LIB)', '\$(INST_ARCHLIB)'); }
@@ -254,6 +273,21 @@ Setting alias of target.
   
   # maybe make testall is
   perl -MExtUtils::Command::MM -e "do 'tool/force-pp.pl'; test_harness(0, 'inc')" t/*t
+
+=item env
+
+Setting $ENV option.
+
+  use inc::Module::Install;
+  tests 't/*t';
+  assemble_test(
+      env => {
+          FOO => 'bar',
+      },
+  );
+  
+  # maybe make test is
+  perl -MExtUtils::Command::MM -e "\$ENV{q{FOO}} = q{bar}; test_harness(0, 'inc')" t/*t
 
 =back
 

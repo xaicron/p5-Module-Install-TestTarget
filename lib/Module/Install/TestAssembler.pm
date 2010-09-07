@@ -126,8 +126,8 @@ Module::Install::TestAssembler - make test maker
       before_run_codes   => ['print "start -> ", scalar localtime, "\n"'],
       after_run_codes    => ['print "end   -> ", scalar localtime, "\n"'],
       tests              => ['t/baz/*t'],
-      target             => ['foo'],     # create make foo target (default test_dunamic)
-      alias              => ['testall'], # make testall is run the make foo. (default test_dunamic)
+      target             => 'foo',     # create make foo target (default test_dunamic)
+      alias              => 'testall', # make testall is run the make foo. (default test_dunamic)
   );
   
   # maybe make test is

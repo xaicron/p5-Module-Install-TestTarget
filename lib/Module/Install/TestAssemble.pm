@@ -1,4 +1,4 @@
-package Module::Install::TestAssembler;
+package Module::Install::TestAssemble;
 
 use strict;
 use warnings;
@@ -118,7 +118,7 @@ __END__
 
 =head1 NAME
 
-Module::Install::TestAssembler - make test maker
+Module::Install::TestAssemble - make test maker
 
 =head1 SYNOPSIS
 
@@ -143,7 +143,7 @@ Module::Install::TestAssembler - make test maker
 
 =head1 DESCRIPTION
 
-Module::Install::TestAssembler is helps make a variety of processing of during the make test.
+Module::Install::TestAssemble is helps make a variety of processing of during the make test.
 
 =head1 FUNCTIONS
 

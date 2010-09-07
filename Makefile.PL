@@ -1,6 +1,6 @@
 use inc::Module::Install;
-name 'Module-Install-TestAssembler';
-all_from 'lib/Module/Install/TestAssembler.pm';
+name 'Module-Install-TestAssemble';
+all_from 'lib/Module/Install/TestAssemble.pm';
 
 #requires '';
 

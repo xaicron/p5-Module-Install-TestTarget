@@ -103,15 +103,17 @@ sub _assemble {
 }
 
 # for `make test`
-no warnings 'redefine';
-*ExtUtils::MM_Any::test_via_harness = sub {
-    my($self, $perl, $tests) = @_;
+CHECK {
+    no warnings 'redefine';
+    *ExtUtils::MM_Any::test_via_harness = sub {
+        my($self, $perl, $tests) = @_;
 
-    $TEST_DYNAMIC->{perl} = $perl;
-    $TEST_DYNAMIC->{tests} ||= $tests;
+        $TEST_DYNAMIC->{perl} = $perl;
+        $TEST_DYNAMIC->{tests} ||= $tests;
 
-    return _assemble(%$TEST_DYNAMIC);
-};
+        return _assemble(%$TEST_DYNAMIC);
+    };
+}
 
 1;
 __END__

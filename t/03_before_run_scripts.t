@@ -19,7 +19,7 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-assemble_test before_run_scripts => './tool/foo.pl';
+test_assemble before_run_scripts => './tool/foo.pl';
 
 auto_include;
 WriteAll;

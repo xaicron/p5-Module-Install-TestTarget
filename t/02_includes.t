@@ -19,7 +19,7 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-assemble_test includes => '/path/to/inc';
+test_assemble includes => '/path/to/inc';
 
 auto_include;
 WriteAll;

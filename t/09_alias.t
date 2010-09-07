@@ -20,7 +20,7 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-assemble_test
+test_assemble
     target  => 'test_pp',
     alias   => 'testall',
     modules => 'Foo::Bar',

@@ -22,7 +22,7 @@ $TEST_DYNAMIC = {
     after_run_scripts  => '',
 };
 
-sub assemble_test {
+sub test_assemble {
     my ($self, %args) = @_;
     my $target = $args{target} || 'test'; # for `make test`
     my $alias  = $args{alias}  || '';

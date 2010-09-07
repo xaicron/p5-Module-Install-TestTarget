@@ -26,7 +26,7 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-assemble_test env => {
+test_assemble env => {
     FOO    => 'bar',
     'BA}R' => 'ba}z',
 };

@@ -15,7 +15,7 @@ our @EXPORT = qw/find_make_test_command DMAKE/;
 
 sub find_make_test_command {
     my ($fh, @target) = @_;
-    my $target = +{ map { $_ => 1 } @target, 'test_dynamic' };
+    my $target = +{ map { $_ => 1 } @target, 'test' };
     
     my $cwd = getcwd;
     my $tmpdir = tempdir CLEANUP => 1;
@@ -33,7 +33,7 @@ sub find_make_test_command {
             open my $fh, 'Makefile' or die "Makefile: $!";
             my $regex = _regex(keys %$target);
             while (<$fh>) {
-                next unless /^($regex) ::/;
+                next unless /^($regex) :: (?:pure_all|$regex)/;
                 $commands->{$1} = scalar <$fh>;
                 delete $target->{$1};
                 my @target = keys %$target;

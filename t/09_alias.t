@@ -6,7 +6,6 @@ use Test::More;
 use t::Util;
 
 ok my $cmd = find_make_test_command(*DATA, 'test_pp', 'testall'), 'find make test command';
-unlike $cmd->{test_dynamic}, qr|Foo::Bar|, 'not set modules';
 like $cmd->{test_pp}, qr|Foo::Bar|, 'find module';
 ok exists $cmd->{testall}, 'eixsts testall';
 

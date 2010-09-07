@@ -7,12 +7,12 @@ use t::Util;
 
 ok my $cmd = find_make_test_command(*DATA), 'find make test command';
 unless (DMAKE) {
-    like $cmd->{test_dynamic}, qr|\\\$\$ENV{q{FOO}} = q{bar};|, 'find env';
-    like $cmd->{test_dynamic}, qr|\\\$\$ENV{q{BA\\}R}} = q{ba\\}z};|, 'find env';
+    like $cmd->{test}, qr|\\\$\$ENV{q{FOO}} = q{bar};|, 'find env';
+    like $cmd->{test}, qr|\\\$\$ENV{q{BA\\}R}} = q{ba\\}z};|, 'find env';
 }
 else {
-    like $cmd->{test_dynamic}, qr|\$\$ENV{{q{{FOO}}}} = q{{bar}};|, 'find env';
-    like $cmd->{test_dynamic}, qr|\$\$ENV{{q{{BA\\}}R}}}} = q{{ba\\}}z}};|, 'find env';
+    like $cmd->{test}, qr|\$\$ENV{{q{{FOO}}}} = q{{bar}};|, 'find env';
+    like $cmd->{test}, qr|\$\$ENV{{q{{BA\\}}R}}}} = q{{ba\\}}z}};|, 'find env';
 }
 
 done_testing;

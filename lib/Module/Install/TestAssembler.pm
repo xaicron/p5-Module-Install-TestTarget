@@ -24,8 +24,8 @@ $TEST_DYNAMIC = {
 
 sub assemble_test {
     my ($self, %args) = @_;
-    my $target = $args{target} || 'test_dynamic'; # for `make test`
-    my $alias  = $args{alias}  || 'test_dynamic';
+    my $target = $args{target} || 'test'; # for `make test`
+    my $alias  = $args{alias}  || '';
 
     for my $key (qw/includes modules before_run_scripts after_run_scripts before_run_codes after_run_codes tests/) {
         $args{$key} ||= [];
@@ -56,8 +56,9 @@ sub assemble_test {
     else {
         my $test = _assemble(%test, perl => '$(FULLPERLRUN)');
 
+        $alias = $alias ? qq{\n$alias :: $target\n\n} : qq{\n};
         $self->postamble(
-              qq{$alias :: $target\n\n}
+              $alias
             . qq{$target :: pure_all\n}
             . qq{\t} . $test
         );
@@ -132,8 +133,8 @@ Module::Install::TestAssembler - make test maker
       before_run_codes   => ['print "start -> ", scalar localtime, "\n"'],
       after_run_codes    => ['print "end   -> ", scalar localtime, "\n"'],
       tests              => ['t/baz/*t'],
-      target             => 'foo',     # create make foo target (default test_dunamic)
-      alias              => 'testall', # make testall is run the make foo. (default test_dunamic)
+      target             => 'foo',     # create make foo target (default test)
+      alias              => 'testall', # make testall is run the make foo
   );
   
   # maybe make test is

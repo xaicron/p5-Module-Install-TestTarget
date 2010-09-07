@@ -6,9 +6,15 @@ use Test::More;
 use t::Util;
 
 ok my $cmd = find_make_test_command(*DATA), 'find make test command';
-like $cmd->{test_dynamic}, qr|sub { print scalar localtime }->\(\); |, 'find before run code';
 like $cmd->{test_dynamic}, qr|system.+cat.+Makefile\.PL|, 'find before run coderef';
-like $cmd->{test_dynamic}, qr|\\\$\$ENV{__TEST__} = 1|, 'find escaped sigil';
+unless (DMAKE) {
+    like $cmd->{test_dynamic}, qr|sub { print scalar localtime }->\(\); |, 'find before run code';
+    like $cmd->{test_dynamic}, qr|\\\$\$ENV{__TEST__} = 1|, 'find escaped sigil';
+}
+else {
+    like $cmd->{test_dynamic}, qr|sub {{ print scalar localtime }}->\(\); |, 'find before run code';
+    like $cmd->{test_dynamic}, qr|\$\$ENV{{__TEST__}} = 1|, 'find escaped sigil';
+}
 
 done_testing;
 

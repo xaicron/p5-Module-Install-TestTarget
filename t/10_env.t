@@ -6,8 +6,14 @@ use Test::More;
 use t::Util;
 
 ok my $cmd = find_make_test_command(*DATA), 'find make test command';
-like $cmd->{test_dynamic}, qr|\\\$\$ENV{q{FOO}} = q{bar};|, 'find env';
-like $cmd->{test_dynamic}, qr|\\\$\$ENV{q{BA\\}R}} = q{ba\\}z};|, 'find env';
+unless (DMAKE) {
+    like $cmd->{test_dynamic}, qr|\\\$\$ENV{q{FOO}} = q{bar};|, 'find env';
+    like $cmd->{test_dynamic}, qr|\\\$\$ENV{q{BA\\}R}} = q{ba\\}z};|, 'find env';
+}
+else {
+    like $cmd->{test_dynamic}, qr|\$\$ENV{{q{{FOO}}}} = q{{bar}};|, 'find env';
+    like $cmd->{test_dynamic}, qr|\$\$ENV{{q{{BA\\}}R}}}} = q{{ba\\}}z}};|, 'find env';
+}
 
 done_testing;
 

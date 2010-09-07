@@ -9,7 +9,9 @@ use Cwd;
 use Config;
 use Exporter 'import';
 
-our @EXPORT = qw/find_make_test_command/;
+use constant DMAKE => $^O eq 'MSWin32' && $Config{make} eq 'dmake';
+
+our @EXPORT = qw/find_make_test_command DMAKE/;
 
 sub find_make_test_command {
     my ($fh, @target) = @_;

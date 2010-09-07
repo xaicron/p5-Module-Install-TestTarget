@@ -8,6 +8,7 @@ $VERSION = '0.01';
 use base qw(Module::Install::Base);
 use ExtUtils::MM_Any;
 use B::Deparse;
+use Config;
 
 my $bd = B::Deparse->new;
 
@@ -68,6 +69,11 @@ sub _quote {
     $code =~ s/\$/\\\$\$/g;
     $code =~ s/"/\\"/g;
     $code =~ s/\n/ /g;
+    if ($^O eq 'MSWin32' and $Config{make} eq 'dmake') {
+        $code =~ s/\\\$\$/\$\$/g;
+        $code =~ s/{/{{/g;
+        $code =~ s/}/}}/g;
+    }
     return $code;
 }
 

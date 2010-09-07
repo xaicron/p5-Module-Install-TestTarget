@@ -11,7 +11,10 @@ all_pod_files_spelling_ok('lib');
 
 __DATA__
 Module::Install::TestAssembler
+env
+preload
 
 # personal section
 xaicron
 xaicron {at} cpan.org
+Yuji Shimada

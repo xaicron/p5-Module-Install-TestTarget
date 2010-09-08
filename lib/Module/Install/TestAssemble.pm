@@ -1,5 +1,6 @@
 package Module::Install::TestAssemble;
 
+use 5.006_002;
 use strict;
 use warnings;
 use vars qw($VERSION $TEST_DYNAMIC $TEST_TARGET);
@@ -7,10 +8,8 @@ $VERSION = '0.01';
 
 use base qw(Module::Install::Base);
 use ExtUtils::MM_Any;
-use B::Deparse;
 use Config;
 
-my $bd = B::Deparse->new;
 
 $TEST_DYNAMIC = {
     env                => '',
@@ -41,7 +40,7 @@ sub test_assemble {
         $test{$key} = @{$args{$key}} ? join '', map { qq|do '$_'; | } @{$args{$key}} : '';
     }
     for my $key (qw/before_run_codes after_run_codes/) {
-        my $codes = @{$args{$key}} ? join '', map { qq|sub { $_ }->(); | } map { ref $_ eq 'CODE' ? $bd->coderef2text($_) : $_ } @{$args{$key}} : '';
+        my $codes = join '', map { _build_funcall($_) } @{$args{$key}};
         $test{$key} = _quote($codes);
     }
     $test{env} = %{$args{env}} ? _quote(join '', map {
@@ -63,6 +62,16 @@ sub test_assemble {
             . qq{\t} . $test
         );
     }
+}
+
+my $bd;
+sub _build_funcall {
+    my($code) = @_;
+    if(ref $code eq 'CODE') {
+        $bd ||= do { require B::Deparse; B::Deparse->new() };
+        $code = $bd->coderef2text($code);
+    }
+    return qq|sub { $code }->(); |;
 }
 
 sub _quote {

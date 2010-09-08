@@ -24,24 +24,21 @@ sub find_make_test_command {
     
     write_file($fh);
     
-    my $make_test_commands;
-    local $@;
-    eval {
+    my $make_test_commands = eval {
         run_make($cwd);
-        $make_test_commands = sub {
-            my $commands = {};
-            open my $fh, 'Makefile' or die "Makefile: $!";
-            my $regex = _regex(keys %$target);
-            while (<$fh>) {
-                next unless /^($regex) :: (?:pure_all|$regex)/;
-                $commands->{$1} = scalar <$fh>;
-                delete $target->{$1};
-                my @target = keys %$target;
-                last unless @target;
-                $regex = _regex(@target);
-            }
-            return $commands;
-        }->();
+
+        my $commands = {};
+        open my $fh, 'Makefile' or die "Makefile: $!";
+        my $regex = _regex(keys %$target);
+        while (<$fh>) {
+            next unless /^($regex) :: (?:pure_all|$regex)/;
+            $commands->{$1} = scalar <$fh>;
+            delete $target->{$1};
+            my @target = keys %$target;
+            last unless @target;
+            $regex = _regex(@target);
+        }
+        return $commands;
     };
     chdir $cwd or die $!;
     

@@ -135,7 +135,7 @@ __END__
 
 =head1 NAME
 
-Module::Install::TestAssemble - make test maker
+Module::Install::TestAssemble - Assembles test targets for `make` with code snippets
 
 =head1 SYNOPSIS
 
@@ -153,82 +153,67 @@ Module::Install::TestAssemble - make test maker
       target             => 'foo',     # create make foo target (default test)
       alias              => 'testall', # make testall is run the make foo
   );
-  
+
+  assemble_test(
+      env => { PERL_ONLY => 1 },
+  );
+
   # maybe make test is
   make test_foo
   perl "-MExtUtils::Command::MM" "-I/home/xaicron/perl5/lib" "-MFoo" "-MBar" "-e" "do 'before.pl'; sub { print \"start -> \", scalar localtime, \"\n\" }->(); test_harness(0, 'inc'); do 'after.pl'; sub { print \"end -> \", scalar localtime, \"\n\" }->();" t/baz/*t
 
 =head1 DESCRIPTION
 
-Module::Install::TestAssemble is helps make a variety of processing of during the make test.
+Module::Install::TestAssemble creates C<make test> variations with code snippets.
+This helps module developers to test their distributions with various conditions, e.g.
+under C<< PERL_ONLY=1 >> or the control of some testing modules.
 
 =head1 FUNCTIONS
 
+=head2 test_assemble(%args)
+
+Defines a new test target with I<%args>.
+
+I<%args> are:
+
 =over
 
-=item assemble_test(%args)
+=item C<< includes => \@include_paths >>
 
-=back
+Sets include paths.
 
-=head2 %args
-
-=over 3
-
-=item tests
-
-Setting running tests.
-
-  use inc::Module::Install;
-  tests 't/*t';
   assemble_test(
-      tests  => ['t/foo.t', 't/bar.t'],
+      includes => ['/path/to/inc'],
   );
-  
-  # maybe make test_pp is
-  perl -MExtUtils::Command::MM -e "do 'tool/force-pp.pl'; test_harness(0, 'inc')" t/foo.t t/bar.t
 
-=item includes
+  # `make test` will be something like this:
+  perl -I/path/to/inc  -MExtUtils::Command::MM -e "test_harness(0, 'inc')" t/*t
 
-Setting include paths.
+=item C<< modules => \@module_names >>
 
-  use inc::Module::Install;
-  tests 't/*t';
-  assemble_test(
-      include => ['/path/to/inc'],
-  );
-  
-  # maybe make test is
-  perl -MExtUtils::Command::MM -I/path/to/inc -e "test_harness(0, 'inc')" t/*t
+Sets modules which are loaded before running C<test_harness()>.
 
-=item modules
-
-Setting preload modules.
-
-  use inc::Module::Install;
-  tests 't/*t';
   assemble_test(
       modules => ['Foo', 'Bar::Baz'],
   );
   
-  # maybe make test is
-  perl -MExtUtils::Command::MM -MFoo -MBar::Baz -e "test_harness(0, 'inc')" t/*t
+  # `make test` will be something like this:
+  perl -MFoo -MBar::Baz -MExtUtils::Command::MM -e "test_harness(0, 'inc')" t/*t
 
-=item before_run_script
+=item C<< before_run_script => \@scripts >>
 
-Setting scripts to run before running the test.
+Sets scripts to run before running C<test_harness()>.
 
-  use inc::Module::Install;
-  tests 't/*t';
   assemble_test(
       before_run_script => ['tool/before_run_script.pl'],
   );
   
-  # maybe make test is
+  # `make test` will be something like this:
   perl -MExtUtils::Command::MM -e "do 'tool/before_run_script.pl; test_harness(0, 'inc')" t/*t
 
-=item after_run_script
+=item C<< after_run_script => \@scripts >>
 
-Setting scripts to run after running the test.
+Sets scripts to run after running C<test_harness()>.
 
   use inc::Module::Install;
   tests 't/*t';
@@ -236,12 +221,12 @@ Setting scripts to run after running the test.
       after_run_script => ['tool/after_run_script.pl'],
   );
   
-  # maybe make test is
+  # `make test` will be something like this:
   perl -MExtUtils::Command::MM -e "test_harness(0, 'inc'); do 'tool/before_run_script.pl;" t/*t
 
-=item before_run_codes
+=item C<< before_run_codes => \@codes >>
 
-Setting perl codes to run before running the test.
+Sets perl codes to run before running C<test_harness()>.
 
   use inc::Module::Install;
   tests 't/*t';
@@ -249,14 +234,14 @@ Setting perl codes to run before running the test.
       before_run__codes => ['print scalar localtime , "\n"', sub { system qw/cat README/ }],
   );
   
-  # maybe make test is
+  # `make test` will be something like this:
   perl -MExtUtils::Command::MM "sub { print scalar localtme, "\n" }->(); sub { system 'cat', 'README' }->(); test_harness(0, 'inc')" t/*t
 
 The perl codes runs before_run_scripts runs later.
 
-=item after_run_codes
+=item C<< after_run_codes => \@codes >>
 
-Setting perl codes to run after running the test.
+Sets perl codes to run after running C<test_harness()>.
 
   use inc::Module::Install;
   tests 't/*t';
@@ -264,14 +249,14 @@ Setting perl codes to run after running the test.
       after_run__codes => ['print scalar localtime , "\n"', sub { system qw/cat README/ }],
   );
   
-  # maybe make test is
+  # `make test` will be something like this:
   perl -MExtUtils::Command::MM "test_harness(0, 'inc'); sub { print scalar localtme, "\n" }->(); sub { system 'cat', 'README' }->();" t/*t
 
 The perl codes runs after_run_scripts runs later.
 
-=item target
+=item C<< target => $name >>
 
-Create a new make test_*.
+Sets a new make target of the test.
 
   use inc::Module::Install;
   tests 't/*t';
@@ -280,38 +265,47 @@ Create a new make test_*.
       target            => 'test_pp',
   );
   
-  # maybe make test_pp is
+  # `make test_pp` will be something like this:
   perl -MExtUtils::Command::MM -e "do 'tool/force-pp.pl'; test_harness(0, 'inc')" t/*t
 
-=item alias
+=item C<< alias => $name >>
 
-Setting alias of target.
+Sets an alias of the test.
 
-  use inc::Module::Install;
-  tests 't/*t';
   assemble_test(
       before_run_script => 'tool/force-pp.pl',
       target            => 'test_pp',
       alias             => 'testall',
   );
   
-  # maybe make testall is
+  # `make test_pp` and `make testall` will be something like this:
   perl -MExtUtils::Command::MM -e "do 'tool/force-pp.pl'; test_harness(0, 'inc')" t/*t
 
-=item env
+=item C<< env => \%env >>
 
-Setting $ENV option.
+Sets environment variables.
 
-  use inc::Module::Install;
-  tests 't/*t';
   assemble_test(
       env => {
           FOO => 'bar',
       },
   );
   
-  # maybe make test is
+  # `make test` will be something like this:
   perl -MExtUtils::Command::MM -e "\$ENV{q{FOO}} = q{bar}; test_harness(0, 'inc')" t/*t
+
+=item C<< tests => \@test_files >>
+
+Sets test files to run.
+
+  assemble_test(
+      tests  => ['t/foo.t', 't/bar.t'],
+      env    => { USE_FOO => 1 },
+      target => 'test_foo',
+  );
+
+  # `make test_foo` will be something like this:
+  perl -MExtUtils::Command::MM -e "$ENV{USE_FOO} = 1 test_harness(0, 'inc')" t/foo.t t/bar.t
 
 =back
 

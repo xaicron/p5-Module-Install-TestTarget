@@ -112,16 +112,23 @@ sub _assemble {
 }
 
 # for `make test`
-CHECK {
-    no warnings 'redefine';
-    *ExtUtils::MM_Any::test_via_harness = sub {
-        my($self, $perl, $tests) = @_;
 
+my $orig_tvh = ExtUtils::MM->can('test_via_harness');
+sub _test_via_harness {
+    my($self, $perl, $tests) = @_;
+
+    if(join '', values %{$TEST_DYNAMIC}) {
         $TEST_DYNAMIC->{perl} = $perl;
         $TEST_DYNAMIC->{tests} ||= $tests;
-
         return _assemble(%$TEST_DYNAMIC);
-    };
+    }
+
+    goto &{$orig_tvh}; # fallback to the default code
+}
+
+CHECK {
+    no warnings 'redefine';
+    *ExtUtils::MM::test_via_harness = \&_test_via_harness;
 }
 
 1;

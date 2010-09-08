@@ -10,25 +10,26 @@ use Config;
 use base qw(Exporter);
 
 use constant DMAKE => $^O eq 'MSWin32' && $Config{make} eq 'dmake';
+use constant MAKE  => $Config{make} || 'make';
 
-our @EXPORT = qw/find_make_test_command DMAKE/;
+our @EXPORT = qw/find_make_test_command unpack_tree build run_make DMAKE/;
 
 sub find_make_test_command {
     my ($fh, @target) = @_;
-    my $target = +{ map { $_ => 1 } @target, 'test' };
+    my $target = +{ map { $_ => 1 } @target, qw(test test_dynamic) };
     
     my $cwd = getcwd;
     my $tmpdir = tempdir CLEANUP => 1;
     
     chdir $tmpdir or die $!;
     
-    write_file($fh);
+    unpack_tree($fh);
     
     my $make_test_commands = eval {
-        run_make($cwd);
+        build($cwd);
 
         my $commands = {};
-        open my $fh, 'Makefile' or die "Makefile: $!";
+        open my $fh, '<', 'Makefile' or die "Cannot open 'Makefile' for reading: $!";
         my $regex = _regex(keys %$target);
         while (<$fh>) {
             next unless /^($regex) :: (?:pure_all|$regex)/;
@@ -47,24 +48,23 @@ sub find_make_test_command {
     return $make_test_commands;
 }
 
-sub run_make {
+sub build {
     my $distdir = shift;
     die "Makefile.PL not found" unless -f 'Makefile.PL';
     _addinc("$distdir/blib/lib");
     run_cmd(qq{$^X Makefile.PL "$distdir/lib"});
-    run_cmd(make());
+    run_make();
 }
 
 sub run_cmd {
     my ($cmd) = @_;
-    local $?;
-    my $result = `$^X Makefile.PL`;
+    my $result = `$cmd`;
     die "$cmd failed ($result)" if $?;
     return $result;
 }
 
-sub make {
-    $Config{make} || 'make';
+sub run_make {
+    run_cmd(join ' ', MAKE, @_);
 }
 
 sub _parse_data {
@@ -77,10 +77,11 @@ sub _parse_data {
         }
         $data->{$path} .= $_;
     }
+    close $fh;
     return $data;
 }
 
-sub write_file {
+sub unpack_tree {
     my $data = _parse_data(shift);
 
     for my $path (keys %$data) {

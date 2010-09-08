@@ -29,7 +29,7 @@ $TEST_DYNAMIC = {
 
 sub test_assemble {
     my ($self, %args) = @_;
-    my $target = $args{target} || 'test'; # for `make test`
+    my $target = $args{target} || 'test_dynamic'; # for `make test`
     my $alias  = $args{alias}  || '';
 
     for my $key (qw/includes modules before_run_scripts after_run_scripts before_run_codes after_run_codes tests/) {
@@ -56,9 +56,11 @@ sub test_assemble {
     } keys %{$args{env}}) : '';
 
     if ($target eq 'test_dynamic') {
+        # override the default `make test`
         $TEST_DYNAMIC = \%test;
     }
     else {
+        # create a new test target
         my $test = _assemble(%test);
 
         $alias = $alias ? qq{\n$alias :: $target\n\n} : qq{\n};
@@ -101,7 +103,7 @@ sub _env_quote {
 
 sub _assemble {
     my %args = @_;
-    my $command = MY->$ORIG_TEST_VIA_HARNESS($args{perl} || '($FULLPERLRUN)', $args{tests});
+    my $command = MY->$ORIG_TEST_VIA_HARNESS($args{perl} || '$(FULLPERLRUN)', $args{tests});
 
     # inject includes and modules before the first switch
     $command =~ s/("- \S+? ")/$args{includes}$args{modules}$1/xms;

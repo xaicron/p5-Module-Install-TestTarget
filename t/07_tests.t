@@ -6,7 +6,7 @@ use Test::More;
 use t::Util;
 
 ok my $cmd = find_make_test_command(*DATA), 'find make test command';
-like $cmd->{test}, qr|t/foo.t|, 'find tests';
+like $cmd->{test_dynamic}, qr|t/foo.t|, 'find tests';
 
 done_testing;
 

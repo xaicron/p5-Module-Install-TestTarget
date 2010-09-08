@@ -6,7 +6,8 @@ use Test::More;
 use t::Util;
 
 ok my $cmd = find_make_test_command(*DATA), 'find make test command';
-like $cmd->{test}, qr/-MFoo::Bar/, 'find modules';
+
+like $cmd->{test_dynamic}, qr/-MFoo::Bar/, 'find modules';
 
 done_testing;
 

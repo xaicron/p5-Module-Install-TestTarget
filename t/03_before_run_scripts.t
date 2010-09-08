@@ -6,7 +6,7 @@ use Test::More;
 use t::Util;
 
 ok my $cmd = find_make_test_command(*DATA), 'find make test command';
-like $cmd->{test}, qr{do './tool/foo.pl'}, 'find before run scripts';
+like $cmd->{test_dynamic}, qr{do './tool/foo.pl'}, 'find before run scripts';
 
 done_testing;
 

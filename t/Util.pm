@@ -82,14 +82,15 @@ sub _parse_data {
 
 sub write_file {
     my $data = _parse_data(shift);
+
     for my $path (keys %$data) {
-        my $dir = dirname $path;
+        my $dir = dirname($path);
         unless (-e $dir) {
-            mkpath $dir;
+            mkpath($dir) or die "Cannot mkpath '$dir': $!";
         }
         
         my $content = $data->{$path};
-        open my $out, '>', $path or die "$path: $!";
+        open my $out, '>', $path or die "Cannot open '$path' for writing: $!";
         print $out $content;
         close $out;
     }

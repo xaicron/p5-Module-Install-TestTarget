@@ -7,9 +7,15 @@ use vars qw($VERSION $TEST_DYNAMIC $TEST_TARGET);
 $VERSION = '0.01';
 
 use base qw(Module::Install::Base);
-use ExtUtils::MM_Any;
+use ExtUtils::MakeMaker ();
 use Config;
 
+our $ORIG_TEST_VIA_HARNESS;
+CHECK {
+    $ORIG_TEST_VIA_HARNESS = MY->can('test_via_harness');
+    no warnings 'redefine';
+    *MY::test_via_harness = \&_test_via_harness;
+}
 
 $TEST_DYNAMIC = {
     env                => '',
@@ -53,7 +59,7 @@ sub test_assemble {
         $TEST_DYNAMIC = \%test;
     }
     else {
-        my $test = _assemble(%test, perl => '$(FULLPERLRUN)');
+        my $test = _assemble(%test);
 
         $alias = $alias ? qq{\n$alias :: $target\n\n} : qq{\n};
         $self->postamble(
@@ -95,40 +101,33 @@ sub _env_quote {
 
 sub _assemble {
     my %args = @_;
+    my $command = MY->$ORIG_TEST_VIA_HARNESS($args{perl} || '($FULLPERLRUN)', $args{tests});
 
-    return
-          qq{\t$args{perl} "-MExtUtils::Command::MM" }
-        . $args{includes}
-        . $args{modules}
-        . qq{"-e" "}
-        . $args{env}
-        . $args{before_run_scripts}
-        . $args{before_run_codes}
-        . qq{test_harness(\$(TEST_VERBOSE), '\$(INST_LIB)', '\$(INST_ARCHLIB)'); }
-        . $args{after_run_scripts}
-        . $args{after_run_codes}
-        . qq{" $args{tests}\n}
-    ;
+    # inject includes and modules before the first switch
+    $command =~ s/("- \S+? ")/$args{includes}$args{modules}$1/xms;
+
+    # inject snipetts in the one-liner
+    $command =~ s{("-e" \s+ ") (.+) (")}{
+        join '', $1,
+            $args{env},
+            $args{before_run_scripts},
+            $args{before_run_codes},
+            $2,
+            $args{after_run_scripts},
+            $args{after_run_codes},
+            $3,
+    }xmse;
+    return $command;
 }
 
 # for `make test`
 
-my $orig_tvh = ExtUtils::MM->can('test_via_harness');
 sub _test_via_harness {
     my($self, $perl, $tests) = @_;
 
-    if(join '', values %{$TEST_DYNAMIC}) {
-        $TEST_DYNAMIC->{perl} = $perl;
-        $TEST_DYNAMIC->{tests} ||= $tests;
-        return _assemble(%$TEST_DYNAMIC);
-    }
-
-    goto &{$orig_tvh}; # fallback to the default code
-}
-
-CHECK {
-    no warnings 'redefine';
-    *ExtUtils::MM::test_via_harness = \&_test_via_harness;
+    $TEST_DYNAMIC->{perl} = $perl;
+    $TEST_DYNAMIC->{tests} ||= $tests;
+    return _assemble(%$TEST_DYNAMIC);
 }
 
 1;

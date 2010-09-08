@@ -7,7 +7,7 @@ use File::Path qw/mkpath/;
 use File::Basename qw/dirname/;
 use Cwd;
 use Config;
-use Exporter 'import';
+use base qw(Exporter);
 
 use constant DMAKE => $^O eq 'MSWin32' && $Config{make} eq 'dmake';
 

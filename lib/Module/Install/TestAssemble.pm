@@ -233,7 +233,7 @@ Sets perl codes to run before running C<test_harness()>.
   use inc::Module::Install;
   tests 't/*t';
   test_assemble(
-      before_run__codes => ['print scalar localtime , "\n"', sub { system qw/cat README/ }],
+      before_run_codes => ['print scalar localtime , "\n"', sub { system qw/cat README/ }],
   );
   
   # `make test` will be something like this:
@@ -248,7 +248,7 @@ Sets perl codes to run after running C<test_harness()>.
   use inc::Module::Install;
   tests 't/*t';
   test_assemble(
-      after_run__codes => ['print scalar localtime , "\n"', sub { system qw/cat README/ }],
+      after_run_codes => ['print scalar localtime , "\n"', sub { system qw/cat README/ }],
   );
   
   # `make test` will be something like this:

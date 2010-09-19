@@ -27,7 +27,7 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-test_assemble before_run_codes => [
+extends_make_test before_run_codes => [
     'print scalar localtime',
     sub { system qw/cat Makefile.PL/ },
     '$ENV{__TEST__} = 1',

@@ -1,4 +1,4 @@
-package Module::Install::TestAssemble;
+package Module::Install::ExtendsMakeTest;
 
 use 5.006_002;
 use strict;
@@ -27,7 +27,7 @@ $TEST_DYNAMIC = {
     after_run_scripts  => '',
 };
 
-sub test_assemble {
+sub extends_make_test {
     my ($self, %args) = @_;
     my $target = $args{target} || 'test_dynamic'; # for `make test`
     my $alias  = $args{alias}  || '';
@@ -137,14 +137,14 @@ __END__
 
 =head1 NAME
 
-Module::Install::TestAssemble - Assembles test targets for `make` with code snippets
+Module::Install::ExtendsMakeTest - Assembles test targets for `make` with code snippets
 
 =head1 SYNOPSIS
 
   # in Makefile.PL
   use inc::Module::Install;
   tests 't/*t';
-  test_assemble(
+  extends_make_test(
       includes           => ["$ENV{HOME}/perl5/lib"],
       modules            => [qw/Foo Bar/],
       before_run_scripts => [qw/before.pl/],
@@ -156,7 +156,7 @@ Module::Install::TestAssemble - Assembles test targets for `make` with code snip
       alias              => 'testall', # make testall is run the make foo
   );
 
-  test_assemble(
+  extends_make_test(
       env => { PERL_ONLY => 1 },
   );
 
@@ -166,13 +166,13 @@ Module::Install::TestAssemble - Assembles test targets for `make` with code snip
 
 =head1 DESCRIPTION
 
-Module::Install::TestAssemble creates C<make test> variations with code snippets.
+Module::Install::ExtendsMakeTest creates C<make test> variations with code snippets.
 This helps module developers to test their distributions with various conditions, e.g.
 under C<< PERL_ONLY=1 >> or the control of some testing modules.
 
 =head1 FUNCTIONS
 
-=head2 test_assemble(%args)
+=head2 extends_make_test(%args)
 
 Defines a new test target with I<%args>.
 
@@ -184,7 +184,7 @@ I<%args> are:
 
 Sets include paths.
 
-  test_assemble(
+  extends_make_test(
       includes => ['/path/to/inc'],
   );
 
@@ -195,7 +195,7 @@ Sets include paths.
 
 Sets modules which are loaded before running C<test_harness()>.
 
-  test_assemble(
+  extends_make_test(
       modules => ['Foo', 'Bar::Baz'],
   );
   
@@ -206,7 +206,7 @@ Sets modules which are loaded before running C<test_harness()>.
 
 Sets scripts to run before running C<test_harness()>.
 
-  test_assemble(
+  extends_make_test(
       before_run_script => ['tool/before_run_script.pl'],
   );
   
@@ -219,7 +219,7 @@ Sets scripts to run after running C<test_harness()>.
 
   use inc::Module::Install;
   tests 't/*t';
-  test_assemble(
+  extends_make_test(
       after_run_script => ['tool/after_run_script.pl'],
   );
   
@@ -232,7 +232,7 @@ Sets perl codes to run before running C<test_harness()>.
 
   use inc::Module::Install;
   tests 't/*t';
-  test_assemble(
+  extends_make_test(
       before_run_codes => ['print scalar localtime , "\n"', sub { system qw/cat README/ }],
   );
   
@@ -247,7 +247,7 @@ Sets perl codes to run after running C<test_harness()>.
 
   use inc::Module::Install;
   tests 't/*t';
-  test_assemble(
+  extends_make_test(
       after_run_codes => ['print scalar localtime , "\n"', sub { system qw/cat README/ }],
   );
   
@@ -262,7 +262,7 @@ Sets a new make target of the test.
 
   use inc::Module::Install;
   tests 't/*t';
-  test_assemble(
+  extends_make_test(
       before_run_script => 'tool/force-pp.pl',
       target            => 'test_pp',
   );
@@ -274,7 +274,7 @@ Sets a new make target of the test.
 
 Sets an alias of the test.
 
-  test_assemble(
+  extends_make_test(
       before_run_script => 'tool/force-pp.pl',
       target            => 'test_pp',
       alias             => 'testall',
@@ -287,7 +287,7 @@ Sets an alias of the test.
 
 Sets environment variables.
 
-  test_assemble(
+  extends_make_test(
       env => {
           FOO => 'bar',
       },
@@ -300,7 +300,7 @@ Sets environment variables.
 
 Sets test files to run.
 
-  test_assemble(
+  extends_make_test(
       tests  => ['t/foo.t', 't/bar.t'],
       env    => { USE_FOO => 1 },
       target => 'test_foo',

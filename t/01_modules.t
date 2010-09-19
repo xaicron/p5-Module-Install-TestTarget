@@ -20,7 +20,7 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-test_assemble modules => 'Foo::Bar';
+extends_make_test modules => 'Foo::Bar';
 
 auto_include;
 WriteAll;

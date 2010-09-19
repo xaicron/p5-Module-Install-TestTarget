@@ -1,6 +1,6 @@
 use inc::Module::Install;
-name 'Module-Install-TestAssemble';
-all_from 'lib/Module/Install/TestAssemble.pm';
+name 'Module-Install-ExtendsMakeTest';
+all_from 'lib/Module/Install/ExtendsMakeTest.pm';
 
 requires 'Module::Install' => 1.00;
 

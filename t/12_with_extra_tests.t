@@ -21,7 +21,7 @@ tests 't/*.t';
 
 extra_tests;
 
-test_assemble
+extends_make_test
     modules => ['Foo::Bar'],
     target  => 'test_dynamic';
 

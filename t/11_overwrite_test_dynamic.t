@@ -19,7 +19,7 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-test_assemble
+extends_make_test
     modules => ['Foo::Bar'],
     target  => 'test_dynamic';
 

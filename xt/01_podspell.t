@@ -10,7 +10,7 @@ $ENV{LANG} = 'C';
 all_pod_files_spelling_ok('lib');
 
 __DATA__
-Module::Install::TestAssemble
+Module::Install::ExtendsMakeTest
 env
 preload
 

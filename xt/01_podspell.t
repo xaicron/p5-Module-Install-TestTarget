@@ -13,6 +13,7 @@ __DATA__
 Module::Install::ExtendsMakeTest
 env
 preload
+foo
 
 # personal section
 xaicron

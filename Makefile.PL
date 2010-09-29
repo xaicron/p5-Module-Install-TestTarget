@@ -4,7 +4,7 @@ all_from 'lib/Module/Install/ExtendsMakeTest.pm';
 
 requires 'Module::Install' => 1.00;
 
-test_requires 'Test::More', 0.88;
+test_requires 'Test::More', 0.96;
 test_requires 'Test::Requires';
 
 tests_recursive 't';

@@ -3,14 +3,14 @@ package Module::Install::ExtendsMakeTest;
 use 5.006_002;
 use strict;
 use warnings;
-use vars qw($VERSION $TEST_DYNAMIC $TEST_TARGET);
+use vars qw($VERSION $TEST_DYNAMIC $TEST_TARGET $ORIG_TEST_VIA_HARNESS);
 $VERSION = '0.01';
 
 use base qw(Module::Install::Base);
 use ExtUtils::MakeMaker ();
 use Config;
+use Carp qw(croak);
 
-our $ORIG_TEST_VIA_HARNESS;
 CHECK {
     $ORIG_TEST_VIA_HARNESS = MY->can('test_via_harness');
     no warnings 'redefine';
@@ -27,11 +27,32 @@ $TEST_DYNAMIC = {
     after_run_scripts  => '',
 };
 
+# override the default `make test`
+sub replace_default_make_test {
+    my ($self, %args) = @_;
+    my %test = _build_command_parts(%args);
+    $TEST_DYNAMIC = \%test;
+}
+
+# create a new test target
 sub extends_make_test {
     my ($self, %args) = @_;
-    my $target = $args{target} || 'test_dynamic'; # for `make test`
+    my $target = $args{target} || croak 'target must be spesiced at extends_make_test()';
     my $alias  = $args{alias}  || '';
 
+    my $test = _assemble(_build_command_parts(%args));
+
+    $alias = $alias ? qq{\n$alias :: $target\n\n} : qq{\n};
+    $self->postamble(
+          $alias
+        . qq{$target :: pure_all\n}
+        . qq{\t} . $test
+    );
+}
+
+sub _build_command_parts {
+    my %args = @_;
+    
     for my $key (qw/includes modules before_run_scripts after_run_scripts before_run_codes after_run_codes tests/) {
         $args{$key} ||= [];
         $args{$key} = [$args{$key}] unless ref $args{$key} eq 'ARRAY';
@@ -55,21 +76,7 @@ sub extends_make_test {
         sprintf "\$ENV{q{%s}} = q{%s}; ", $key, $val
     } keys %{$args{env}}) : '';
 
-    if ($target eq 'test_dynamic') {
-        # override the default `make test`
-        $TEST_DYNAMIC = \%test;
-    }
-    else {
-        # create a new test target
-        my $test = _assemble(%test);
-
-        $alias = $alias ? qq{\n$alias :: $target\n\n} : qq{\n};
-        $self->postamble(
-              $alias
-            . qq{$target :: pure_all\n}
-            . qq{\t} . $test
-        );
-    }
+    return %test;
 }
 
 my $bd;
@@ -122,8 +129,6 @@ sub _assemble {
     return $command;
 }
 
-# for `make test`
-
 sub _test_via_harness {
     my($self, $perl, $tests) = @_;
 
@@ -141,9 +146,12 @@ Module::Install::ExtendsMakeTest - Assembles test targets for `make` with code s
 
 =head1 SYNOPSIS
 
-  # in Makefile.PL
+inside Makefile.PL:
+
   use inc::Module::Install;
   tests 't/*t';
+  
+  # create a new test target
   extends_make_test(
       includes           => ["$ENV{HOME}/perl5/lib"],
       modules            => [qw/Foo Bar/],
@@ -152,16 +160,13 @@ Module::Install::ExtendsMakeTest - Assembles test targets for `make` with code s
       before_run_codes   => ['print "start -> ", scalar localtime, "\n"'],
       after_run_codes    => ['print "end   -> ", scalar localtime, "\n"'],
       tests              => ['t/baz/*t'],
-      target             => 'foo',     # create make foo target (default test)
+      env                => { PERL_ONLY => 1 },
+      target             => 'foo',     # create make foo target
       alias              => 'testall', # make testall is run the make foo
   );
 
-  extends_make_test(
-      env => { PERL_ONLY => 1 },
-  );
+maybe make foo is:
 
-  # maybe make test is
-  make test_foo
   perl "-MExtUtils::Command::MM" "-I/home/xaicron/perl5/lib" "-MFoo" "-MBar" "-e" "do 'before.pl'; sub { print \"start -> \", scalar localtime, \"\n\" }->(); test_harness(0, 'inc'); do 'after.pl'; sub { print \"end -> \", scalar localtime, \"\n\" }->();" t/baz/*t
 
 =head1 DESCRIPTION
@@ -310,6 +315,12 @@ Sets test files to run.
   perl -MExtUtils::Command::MM -e "$ENV{USE_FOO} = 1 test_harness(0, 'inc')" t/foo.t t/bar.t
 
 =back
+
+=head2 replace_default_make_test(%args)
+
+Override the default `make test` with I<%args>.
+
+Same argument as C<extends_make_test()>, but `target` and `alias` are not allowed.
 
 =head1 AUTHOR
 

@@ -326,6 +326,8 @@ Same argument as C<extends_make_test()>, but `target` and `alias` are not allowe
 
 Yuji Shimada E<lt>xaicron {at} cpan.orgE<gt>
 
+Goro Fuji (gfx) <gfuji at cpan.org>
+
 =head1 SEE ALSO
 
 L<Module::Install>

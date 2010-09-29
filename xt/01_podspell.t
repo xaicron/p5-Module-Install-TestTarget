@@ -19,3 +19,5 @@ foo
 xaicron
 xaicron {at} cpan.org
 Yuji Shimada
+Goro Fuji
+gfx

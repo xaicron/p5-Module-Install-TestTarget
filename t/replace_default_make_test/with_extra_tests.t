@@ -21,9 +21,9 @@ tests 't/*.t';
 
 extra_tests;
 
-extends_make_test
+replace_default_make_test(
     modules => ['Foo::Bar'],
-    target  => 'test_dynamic';
+);
 
 auto_include;
 WriteAll;

@@ -5,15 +5,8 @@ use lib 't/lib';
 use Test::More;
 use t::Util;
 
-ok my $cmd = find_make_test_command(*DATA), 'find make test command';
-unless (DMAKE) {
-    like $cmd->{test_dynamic}, qr|\\\$\$ENV{q{FOO}} = q{bar};|, 'find env';
-    like $cmd->{test_dynamic}, qr|\\\$\$ENV{q{BA\\}R}} = q{ba\\}z};|, 'find env';
-}
-else {
-    like $cmd->{test_dynamic}, qr|\$\$ENV{{q{{FOO}}}} = q{{bar}};|, 'find env';
-    like $cmd->{test_dynamic}, qr|\$\$ENV{{q{{BA\\}}R}}}} = q{{ba\\}}z}};|, 'find env';
-}
+ok my $cmd = find_make_test_command(*DATA, 'extends_test'), 'find make test command';
+like $cmd->{extends_test}, qr{do './tool/foo.pl'}, 'find before run scripts';
 
 done_testing;
 
@@ -26,10 +19,10 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-extends_make_test env => {
-    FOO    => 'bar',
-    'BA}R' => 'ba}z',
-};
+extends_make_test(
+    before_run_scripts => './tool/foo.pl',
+    target             => 'extends_test',
+);
 
 auto_include;
 WriteAll;

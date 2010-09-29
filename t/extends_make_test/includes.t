@@ -5,8 +5,8 @@ use lib 't/lib';
 use Test::More;
 use t::Util;
 
-ok my $cmd = find_make_test_command(*DATA), 'find make test command';
-like $cmd->{test_dynamic}, qr{-I/path/to/inc}, 'find includes';
+ok my $cmd = find_make_test_command(*DATA, 'extends_test'), 'find make test command';
+like $cmd->{extends_test}, qr{-I/path/to/inc}, 'find includes';
 
 done_testing;
 
@@ -19,7 +19,10 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-extends_make_test includes => '/path/to/inc';
+extends_make_test(
+    includes => '/path/to/inc',
+    target   => 'extends_test',
+);
 
 auto_include;
 WriteAll;

@@ -4,7 +4,7 @@ use 5.006_002;
 use strict;
 use warnings;
 use vars qw($VERSION $TEST_DYNAMIC $TEST_TARGET $ORIG_TEST_VIA_HARNESS);
-$VERSION = '0.01_02';
+$VERSION = '0.01_03';
 
 use base qw(Module::Install::Base);
 use ExtUtils::MakeMaker ();

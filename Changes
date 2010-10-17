@@ -1,5 +1,8 @@
 Revision history for Perl extension Module::Install::TestAssembler
 
+0.02    Sun Oct 17 14:56:14 2010
+        - release
+
 0.01_03 Fri Oct 15 02:42:46 2010
         - changed Makefile.PL. not using inc::Module::Install
 

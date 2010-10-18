@@ -1,6 +1,7 @@
 package Module::Install::ExtendsMakeTest;
 use 5.006_002;
 use strict;
+#use warnings; # XXX: warnings.pm produces a lot of 'redefine' warnings!
 our $VERSION = '0.02';
 
 use base qw(Module::Install::Base);

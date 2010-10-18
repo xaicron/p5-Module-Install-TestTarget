@@ -1,7 +1,7 @@
 package Module::Install::ExtendsMakeTest;
 use 5.006_002;
 use strict;
-$VERSION = '0.02';
+our $VERSION = '0.02';
 
 use base qw(Module::Install::Base);
 use Config;

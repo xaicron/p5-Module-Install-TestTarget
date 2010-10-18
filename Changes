@@ -1,5 +1,8 @@
 Revision history for Perl extension Module::Install::TestAssembler
 
+0.03
+        - workaround problems with non-author environments (gfx)
+
 0.02    Sun Oct 17 14:56:14 2010
         - release
 

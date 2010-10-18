@@ -1,23 +1,15 @@
 package Module::Install::ExtendsMakeTest;
-
 use 5.006_002;
 use strict;
-use warnings;
-use vars qw($VERSION $TEST_DYNAMIC $TEST_TARGET $ORIG_TEST_VIA_HARNESS);
-$VERSION = '0.01_03';
+our $VERSION = '0.01_03';
 
 use base qw(Module::Install::Base);
-use ExtUtils::MakeMaker ();
 use Config;
 use Carp qw(croak);
 
-CHECK {
-    $ORIG_TEST_VIA_HARNESS = MY->can('test_via_harness');
-    no warnings 'redefine';
-    *MY::test_via_harness = \&_test_via_harness;
-}
+our($TEST_TARGET, $ORIG_TEST_VIA_HARNESS);
 
-$TEST_DYNAMIC = {
+our $TEST_DYNAMIC = {
     env                => '',
     includes           => '',
     modules            => '',
@@ -52,7 +44,14 @@ sub extends_make_test {
 
 sub _build_command_parts {
     my %args = @_;
-    
+
+    #XXX: _build_command_parts() will be called first, so we put ithere
+    unless(defined $ORIG_TEST_VIA_HARNESS) {
+        $ORIG_TEST_VIA_HARNESS = MY->can('test_via_harness');
+        no warnings 'redefine';
+        *MY::test_via_harness = \&_test_via_harness;
+    }
+
     for my $key (qw/includes modules before_run_scripts after_run_scripts before_run_codes after_run_codes tests/) {
         $args{$key} ||= [];
         $args{$key} = [$args{$key}] unless ref $args{$key} eq 'ARRAY';

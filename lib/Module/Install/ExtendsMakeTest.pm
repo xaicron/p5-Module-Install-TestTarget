@@ -209,12 +209,12 @@ Sets modules which are loaded before running C<test_harness()>.
   # `make test` will be something like this:
   perl -MFoo -MBar::Baz -MExtUtils::Command::MM -e "test_harness(0, 'inc')" t/*t
 
-=item C<< before_run_script => \@scripts >>
+=item C<< before_run_scripts => \@scripts >>
 
 Sets scripts to run before running C<test_harness()>.
 
   extends_make_test(
-      before_run_script => ['tool/before_run_script.pl'],
+      before_run_scripts => ['tool/before_run_script.pl'],
   );
   
   # `make test` will be something like this:
@@ -270,8 +270,8 @@ Sets a new make target of the test.
   use inc::Module::Install;
   tests 't/*t';
   extends_make_test(
-      before_run_script => 'tool/force-pp.pl',
-      target            => 'test_pp',
+      before_run_scripts => 'tool/force-pp.pl',
+      target             => 'test_pp',
   );
   
   # `make test_pp` will be something like this:
@@ -282,9 +282,9 @@ Sets a new make target of the test.
 Sets an alias of the test.
 
   extends_make_test(
-      before_run_script => 'tool/force-pp.pl',
-      target            => 'test_pp',
-      alias             => 'testall',
+      before_run_scripts => 'tool/force-pp.pl',
+      target             => 'test_pp',
+      alias              => 'testall',
   );
   
   # `make test_pp` and `make testall` will be something like this:

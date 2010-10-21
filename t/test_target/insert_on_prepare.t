@@ -19,9 +19,8 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-extends_make_test(
-    before_run_scripts => './tool/foo.pl',
-    target             => 'extends_test',
+test_target extends_test => (
+    run_on_prepare => './tool/foo.pl',
 );
 
 auto_include;

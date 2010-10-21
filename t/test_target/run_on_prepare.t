@@ -27,13 +27,12 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-extends_make_test(
-    before_run_codes => [
+test_target extends_test => (
+    insert_on_prepare => [
         'print scalar localtime',
         sub { system qw/cat Makefile.PL/ },
         '$ENV{__TEST__} = 1',
     ],
-    target => 'extends_test',
 );
 
 auto_include;

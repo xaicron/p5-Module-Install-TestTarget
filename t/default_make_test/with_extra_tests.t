@@ -22,7 +22,7 @@ tests 't/*.t';
 extra_tests;
 
 replace_default_make_test(
-    modules => ['Foo::Bar'],
+    load_modules => ['Foo::Bar'],
 );
 
 auto_include;

@@ -7,7 +7,7 @@ use t::Util;
 
 ok my $cmd = find_make_test_command(*DATA, 'extends_test'), 'find make test command';
 
-like $cmd->{extends_test}, qr/-MFoo::Bar/, 'find modules';
+like $cmd->{extends_test}, qr/-MFoo::Bar/, 'find load_modules';
 
 done_testing;
 
@@ -20,9 +20,8 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-extends_make_test(
-    modules => 'Foo::Bar',
-    target  => 'extends_test',
+test_target extends_test => (
+    load_modules => 'Foo::Bar',
 );
 
 auto_include;

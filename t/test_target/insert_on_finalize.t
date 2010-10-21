@@ -19,9 +19,8 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-extends_make_test(
-    after_run_scripts => './tool/bar.pl',
-    target => 'extends_test',
+test_target extends_test => (
+    run_on_finalize => './tool/bar.pl',
 );
 
 auto_include;

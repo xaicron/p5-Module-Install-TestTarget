@@ -20,11 +20,10 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-extends_make_test
-    target  => 'test_pp',
-    alias   => 'testall',
-    modules => 'Foo::Bar',
-;
+test_target test_pp => (
+    alias        => 'testall',
+    load_modules => 'Foo::Bar',
+);
 
 auto_include;
 WriteAll;

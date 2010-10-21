@@ -26,12 +26,11 @@ all_from 'lib/MyModule.pm';
 
 tests 't/*.t';
 
-extends_make_test(
+test_target extends_test => (
     env => {
         FOO    => 'bar',
         'BA}R' => 'ba}z',
     },
-    target => 'extends_test',
 );
 
 auto_include;

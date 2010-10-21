@@ -171,6 +171,8 @@ maybe make foo is:
 
 =head1 DESCRIPTION
 
+B<DUPLICATED!!!>
+
 Module::Install::ExtendsMakeTest creates C<make test> variations with code snippets.
 This helps module developers to test their distributions with various conditions, e.g.
 under C<< PERL_ONLY=1 >> or the control of some testing modules.

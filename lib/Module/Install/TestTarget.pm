@@ -142,7 +142,7 @@ __END__
 
 =head1 NAME
 
-Module::Install::TestTarget - Assembles test targets for `make` with code snippets
+Module::Install::TestTarget - Assembles Custom Test Targets For `make` 
 
 =head1 SYNOPSIS
 
@@ -150,29 +150,76 @@ inside Makefile.PL:
 
   use inc::Module::Install;
   tests 't/*t';
+
+  # override the default `make test`
+  default_test_target
+      includes           => ["$ENV{HOME}/perl5/lib"],
+      load_modules       => [qw/Foo Bar/],
+      run_on_prepare     => [qw/before.pl/],
+      run_on_finalize    => [qw/after.pl/],
+      insert_on_prepare  => ['print "start -> ", scalar localtime, "\n"'],
+      insert_on_finalize => ['print "end   -> ", scalar localtime, "\n"'],
+      tests              => ['t/baz/*t'],
+      env                => { PERL_ONLY => 1 },
+  ;
   
-  # create a new test target
+  # create a new test target (allows `make foo`)
   test_target foo => (
       includes           => ["$ENV{HOME}/perl5/lib"],
       load_modules       => [qw/Foo Bar/],
       run_on_prepare     => [qw/before.pl/],
       run_on_finalize    => [qw/after.pl/],
-      insert_on_prepare   => ['print "start -> ", scalar localtime, "\n"'],
-      insert_on_finalize    => ['print "end   -> ", scalar localtime, "\n"'],
+      insert_on_prepare  => ['print "start -> ", scalar localtime, "\n"'],
+      insert_on_finalize => ['print "end   -> ", scalar localtime, "\n"'],
       tests              => ['t/baz/*t'],
       env                => { PERL_ONLY => 1 },
       alias              => 'testall', # make testall is run the make foo
   );
 
-maybe make foo is:
-
+  # above target 'foo' will turn into something like:
   perl "-MExtUtils::Command::MM" "-I/home/xaicron/perl5/lib" "-MFoo" "-MBar" "-e" "do 'before.pl'; sub { print \"start -> \", scalar localtime, \"\n\" }->(); test_harness(0, 'inc'); do 'after.pl'; sub { print \"end -> \", scalar localtime, \"\n\" }->();" t/baz/*t
 
 =head1 DESCRIPTION
 
 Module::Install::TestTarget creates C<make test> variations with code snippets.
-This helps module developers to test their distributions with various conditions, e.g.
-under C<< PERL_ONLY=1 >> or the control of some testing modules.
+This helps module developers to test their distributions with various conditions.
+
+=head1 EXAMPLES
+
+=head2 TEST A MODULE WITH XS/PP BACKENDS
+
+Suppose your XS module can load a PurePerl backend by setting the PERL_ONLY
+environment variable. You can force your tests to use this environment
+flag using this construct:
+
+    test_target test_pp => (
+        env => { PERL_ONLY => 1 },
+    );
+
+=head2 TEST AN APP USING DATABASES
+
+Suppose you want to instantiate a mysqld instance using Test::mysqld, but you
+don't want to start/stop mysqld for every test script. You can start mysqld
+once using this module.
+
+First create a script like this:
+
+    # t/start_mysqld.pl
+    use Test::mysqld;
+    my $mysqld = Test::mysqld->new( ... );
+
+Then in your Makefile.PL, simply specify that you want to run this script before executing any tests.
+
+    test_target test_db => (
+        run_on_prepare => [ 't/start_mysqld.pl' ]
+    );
+
+Since the script is going to be executed in global scope, $mysqld will stay 
+active during the execution of your tests -- the mysqld instance that came
+up will shutdown automatically after the tests are executed.
+
+You can use this trick to run other daemons, such as memcached (maybe via
+Test::Memcached)
 
 =head1 FUNCTIONS
 
@@ -217,14 +264,14 @@ Sets scripts to run before running C<test_harness()>.
   # `make foo` will be something like this:
   perl -MExtUtils::Command::MM -e "do 'tool/run_on_prepare.pl; test_harness(0, 'inc')" t/*t
 
-=item C<< after_run_script => \@scripts >>
+=item C<< run_on_prepare => \@scripts >>
 
 Sets scripts to run after running C<test_harness()>.
 
   use inc::Module::Install;
   tests 't/*t';
   test_taget foo => (
-      after_run_script => ['tool/after_run_script.pl'],
+      run_on_prepare => ['tool/run_on_prepare.pl'],
   );
   
   # `make foo` will be something like this:

@@ -1,7 +1,7 @@
 use ExtUtils::MakeMaker;
 WriteMakefile(
-    NAME => 'Module::Install::ExtendsMakeTest',
-    VERSION_FROM => 'lib/Module/Install/ExtendsMakeTest.pm',
+    NAME => 'Module::Install::TestTarget',
+    VERSION_FROM => 'lib/Module/Install/TestTarget.pm',
     ABSTRACT => 'Assembles test targets for `make` with code snippets',
     PREREQ_PM => {
         'ExtUtils::MakeMaker' => 6.31,

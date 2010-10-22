@@ -14,6 +14,12 @@ Module::Install::TestTarget
 env
 preload
 foo
+APP
+PurePerl
+XS
+backend
+memcached
+mysqld
 
 # personal section
 xaicron

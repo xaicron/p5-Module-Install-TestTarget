@@ -22,6 +22,7 @@ our $TEST_DYNAMIC = {
 
 # override the default `make test`
 sub replace_default_make_test {
+    die "replace_default_make_test is duplicated!!";
     my ($self, %args) = @_;
     my %test = _build_command_parts(%args);
     $TEST_DYNAMIC = \%test;
@@ -29,6 +30,7 @@ sub replace_default_make_test {
 
 # create a new test target
 sub extends_make_test {
+    die "extends_make_test is duplicated!!";
     my ($self, %args) = @_;
     my $target = $args{target} || croak 'target must be spesiced at extends_make_test()';
     my $alias  = $args{alias}  || '';

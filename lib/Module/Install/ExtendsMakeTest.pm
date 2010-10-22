@@ -4,6 +4,16 @@ use strict;
 #use warnings; # XXX: warnings.pm produces a lot of 'redefine' warnings!
 our $VERSION = '0.04';
 
+sub _deprecated {
+    print STDERR <<EOM;
+***** WARNING *****
+
+Module::Install::ExtendsMakeTest has been DEPRECATED.
+Please use Module::Install::TestTarget instead.
+
+EOM
+}
+
 use base qw(Module::Install::Base);
 use Config;
 use Carp qw(croak);
@@ -22,7 +32,8 @@ our $TEST_DYNAMIC = {
 
 # override the default `make test`
 sub replace_default_make_test {
-    die "replace_default_make_test is duplicated!!";
+    _deprecated;
+
     my ($self, %args) = @_;
     my %test = _build_command_parts(%args);
     $TEST_DYNAMIC = \%test;
@@ -30,7 +41,8 @@ sub replace_default_make_test {
 
 # create a new test target
 sub extends_make_test {
-    die "extends_make_test is duplicated!!";
+    _deprecated;
+
     my ($self, %args) = @_;
     my $target = $args{target} || croak 'target must be spesiced at extends_make_test()';
     my $alias  = $args{alias}  || '';
@@ -173,7 +185,7 @@ maybe make foo is:
 
 =head1 DESCRIPTION
 
-B<DUPLICATED!!!>
+This module has been B<DEPRECATED>. Please use Module::Install::TestTarget instead.
 
 Module::Install::ExtendsMakeTest creates C<make test> variations with code snippets.
 This helps module developers to test their distributions with various conditions, e.g.

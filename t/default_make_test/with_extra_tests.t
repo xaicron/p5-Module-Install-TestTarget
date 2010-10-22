@@ -21,7 +21,7 @@ tests 't/*.t';
 
 extra_tests;
 
-replace_default_make_test(
+default_test_target(
     load_modules => ['Foo::Bar'],
 );
 

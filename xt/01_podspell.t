@@ -21,3 +21,5 @@ xaicron {at} cpan.org
 Yuji Shimada
 Goro Fuji
 gfx
+Maki Daisuke
+lestrrat

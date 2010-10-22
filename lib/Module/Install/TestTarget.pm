@@ -358,6 +358,8 @@ Yuji Shimada E<lt>xaicron {at} cpan.orgE<gt>
 
 Goro Fuji (gfx) <gfuji at cpan.org>
 
+Maki Daisuke (lestrrat)
+
 =head1 SEE ALSO
 
 L<Module::Install>

@@ -1,11 +1,11 @@
-This is Perl module Module::Install::TestAssembler.
+This is Perl module Module::Install::TestTarget.
 
 INSTALLATION
 
-Module::Install::TestAssembler installation is straightforward. If your CPAN shell is set up,
+Module::Install::TestTarget installation is straightforward. If your CPAN shell is set up,
 you should just be able to do
 
-    % cpan Module::Install::TestAssembler
+    % cpan Module::Install::TestTarget
 
 Download it, unpack it, then build it as per the usual:
 
@@ -18,9 +18,9 @@ Then install it:
 
 DOCUMENTATION
 
-Module::Install::TestAssembler documentation is available as in POD. So you can do:
+Module::Install::TestTarget documentation is available as in POD. So you can do:
 
-    % perldoc Module::Install::TestAssembler
+    % perldoc Module::Install::TestTarget
 
 to read the documentation online with your favorite pager.
 

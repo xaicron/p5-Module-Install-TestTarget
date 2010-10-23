@@ -1,5 +1,8 @@
 Revision history for Perl extension Module::Install::TestTarget
 
+0.11    Sat Oct 23 14:12:37 2010
+        - fixed document typo for Module::Install::ExtendsMakeTest
+
 0.10    Fri Oct 22 23:46:58 2010
         - renamed module name, and options (idea from lestrrat)
         - write document (thanks lestrrat!)

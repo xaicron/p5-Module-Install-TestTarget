@@ -2,7 +2,7 @@ package Module::Install::TestTarget;
 use 5.006_002;
 use strict;
 #use warnings; # XXX: warnings.pm produces a lot of 'redefine' warnings!
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 use base qw(Module::Install::Base);
 use Config;

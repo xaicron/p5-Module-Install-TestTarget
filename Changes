@@ -1,5 +1,8 @@
 Revision history for Perl extension Module::Install::TestTarget
 
+0.12    Sat Nov  6 18:38:53 2010
+        - workaround for nmake (report by gfx)
+
 0.11    Sat Oct 23 14:12:37 2010
         - fixed document typo for Module::Install::ExtendsMakeTest
 

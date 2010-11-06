@@ -9,10 +9,11 @@ use Cwd;
 use Config;
 use base qw(Exporter);
 
-use constant DMAKE => $^O eq 'MSWin32' && $Config{make} eq 'dmake';
+use constant DMAKE => $^O eq 'MSWin32' && $Config{make} =~ /dmake(?:\.exe)?$/;
+use constant NMAKE => $^O eq 'MSWin32' && $Config{make} =~ /nmake(?:\.exe)?$/;
 use constant MAKE  => $Config{make} || 'make';
 
-our @EXPORT = qw/find_make_test_command unpack_tree build run_make DMAKE/;
+our @EXPORT = qw/find_make_test_command unpack_tree build run_make DMAKE NMAKE/;
 
 sub find_make_test_command {
     my ($fh, @target) = @_;

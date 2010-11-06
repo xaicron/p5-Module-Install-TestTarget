@@ -6,13 +6,18 @@ use Test::More;
 use t::Util;
 
 ok my $cmd = find_make_test_command(*DATA, 'extends_test'), 'find make test command';
-unless (DMAKE) {
-    like $cmd->{extends_test}, qr|\\\$\$ENV{q{FOO}} = q{bar};|, 'find env';
-    like $cmd->{extends_test}, qr|\\\$\$ENV{q{BA\\}R}} = q{ba\\}z};|, 'find env';
-}
-else {
+if (DMAKE) {
     like $cmd->{extends_test}, qr|\$\$ENV{{q{{FOO}}}} = q{{bar}};|, 'find env';
     like $cmd->{extends_test}, qr|\$\$ENV{{q{{BA\\}}R}}}} = q{{ba\\}}z}};|, 'find env';
+}
+elsif (NMAKE) {
+    diag "NAME";
+    like $cmd->{extends_test}, qr|\$\$ENV{q{FOO}} = q{bar};|, 'find env';
+    like $cmd->{extends_test}, qr|\$\$ENV{q{BA\\}R}} = q{ba\\}z};|, 'find env';
+}
+else {
+    like $cmd->{extends_test}, qr|\\\$\$ENV{q{FOO}} = q{bar};|, 'find env';
+    like $cmd->{extends_test}, qr|\\\$\$ENV{q{BA\\}R}} = q{ba\\}z};|, 'find env';
 }
 
 done_testing;

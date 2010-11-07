@@ -64,7 +64,8 @@ sub _build_command_parts {
     $test{load_modules}  = @{$args{load_modules}}  ? join '', map { qq|"-M$_" | } @{$args{load_modules}}  : '';
     $test{tests}    = @{$args{tests}}    ? join '', map { qq|"$_" |   } @{$args{tests}}    : '$(TEST_FILES)';
     for my $key (qw/run_on_prepare run_on_finalize/) {
-        $test{$key} = @{$args{$key}} ? join '', map { qq|do '$_'; | } @{$args{$key}} : '';
+        $test{$key} = @{$args{$key}} ? join '', map { qq|do { local \$@; do '$_'; die \$@ if \$@ }; | } @{$args{$key}} : '';
+        $test{$key} = _quote($test{$key});
     }
     for my $key (qw/insert_on_prepare insert_on_finalize/) {
         my $codes = join '', map { _build_funcall($_) } @{$args{$key}};

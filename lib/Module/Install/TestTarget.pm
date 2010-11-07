@@ -124,7 +124,7 @@ sub _assemble {
             $args{env},
             $args{run_on_prepare},
             $args{insert_on_prepare},
-            $2,
+            "$2; ",
             $args{run_on_finalize},
             $args{insert_on_finalize},
             $3,

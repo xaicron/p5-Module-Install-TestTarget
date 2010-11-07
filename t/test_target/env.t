@@ -11,7 +11,6 @@ if (DMAKE) {
     like $cmd->{extends_test}, qr|\$\$ENV{{q{{BA\\}}R}}}} = q{{ba\\}}z}};|, 'find env';
 }
 elsif (NMAKE) {
-    diag "NAME";
     like $cmd->{extends_test}, qr|\$\$ENV{q{FOO}} = q{bar};|, 'find env';
     like $cmd->{extends_test}, qr|\$\$ENV{q{BA\\}R}} = q{ba\\}z};|, 'find env';
 }

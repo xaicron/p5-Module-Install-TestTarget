@@ -1,5 +1,9 @@
 Revision history for Perl extension Module::Install::TestTarget
 
+0.13    Sun Nov  7 15:08:45 2010
+        - fixed syntax error for run_on_finalize or insert_on_finalize.
+        - catch exeptions for run_on_prepare and run_on_finalize.
+
 0.12    Sat Nov  6 18:38:53 2010
         - workaround for nmake (report by gfx)
 

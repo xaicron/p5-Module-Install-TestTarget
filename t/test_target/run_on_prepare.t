@@ -6,7 +6,15 @@ use Test::More;
 use t::Util;
 
 ok my $cmd = find_make_test_command(*DATA, 'extends_test'), 'find make test command';
-like $cmd->{extends_test}, qr{do './tool/foo.pl'}, 'find before run scripts';
+if (DMAKE) {
+    like $cmd->{extends_test}, qr|do {{ local \$\$@; do './tool/foo.pl'; die \$\$@ if \$\$@ }};|, 'find after run scripts';
+}
+elsif (NMAKE) {
+    like $cmd->{extends_test}, qr|do { local \$\$@; do './tool/foo.pl'; die \$\$@ if \$\$@ };|, 'find after run scripts';
+}
+else {
+    like $cmd->{extends_test}, qr|do { local \\\$\$@; do './tool/foo.pl'; die \\\$\$@ if \\\$\$@ };|, 'find after run scripts';
+}
 
 done_testing;
 

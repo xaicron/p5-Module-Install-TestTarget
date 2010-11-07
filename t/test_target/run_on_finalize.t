@@ -10,8 +10,10 @@ if (DMAKE) {
     like $cmd->{extends_test}, qr|do {{ local \$\$@; do './tool/bar.pl'; die \$\$@ if \$\$@ }};|, 'find after run scripts';
 }
 elsif (NMAKE) {
+    like $cmd->{extends_test}, qr|do { local \$\$@; do './tool/bar.pl'; die \$\$@ if \$\$@ };|, 'find after run scripts';
 }
 else {
+    like $cmd->{extends_test}, qr|do { local \\\$\$@; do './tool/bar.pl'; die \\\$\$@ if \\\$\$@ };|, 'find after run scripts';
 }
 
 done_testing;

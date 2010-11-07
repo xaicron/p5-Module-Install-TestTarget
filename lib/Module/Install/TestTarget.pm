@@ -180,7 +180,7 @@ inside Makefile.PL:
   );
 
   # above target 'foo' will turn into something like:
-  perl "-MExtUtils::Command::MM" "-I/home/xaicron/perl5/lib" "-MFoo" "-MBar" "-e" "do 'before.pl'; sub { print \"start -> \", scalar localtime, \"\n\" }->(); test_harness(0, 'inc'); do 'after.pl'; sub { print \"end -> \", scalar localtime, \"\n\" }->();" t/baz/*t
+  perl "-MExtUtils::Command::MM" "-I/home/xaicron/perl5/lib" "-MFoo" "-MBar" "-e" "do { local \$@; do 'before.pl'; die \$@ if $@ }; sub { print \"start -> \", scalar localtime, \"\n\" }->(); test_harness(0, 'inc'); do { local \$@; do 'after.pl'; die \$@ if \$@ }; sub { print \"end -> \", scalar localtime, \"\n\" }->();" t/baz/*t
 
 =head1 DESCRIPTION
 
@@ -265,7 +265,7 @@ Sets scripts to run before running C<test_harness()>.
   );
   
   # `make foo` will be something like this:
-  perl -MExtUtils::Command::MM -e "do 'tool/run_on_prepare.pl; test_harness(0, 'inc')" t/*t
+  perl -MExtUtils::Command::MM -e "do { local \$@; do 'tool/run_on_prepare.pl; die \$@ if \$@ }; test_harness(0, 'inc')" t/*t
 
 =item C<< run_on_prepare => \@scripts >>
 
@@ -274,11 +274,11 @@ Sets scripts to run after running C<test_harness()>.
   use inc::Module::Install;
   tests 't/*t';
   test_taget foo => (
-      run_on_prepare => ['tool/run_on_prepare.pl'],
+      run_on_after=> ['tool/run_on_after.pl'],
   );
   
   # `make foo` will be something like this:
-  perl -MExtUtils::Command::MM -e "test_harness(0, 'inc'); do 'tool/run_on_prepare.pl;" t/*t
+  perl -MExtUtils::Command::MM -e "do { local \$@; do 'tool/run_on_after.pl; die \$@ if \$@ }; test_harness(0, 'inc')" t/*t
 
 =item C<< insert_on_prepare => \@codes >>
 
@@ -320,7 +320,7 @@ Sets an alias of the test.
   );
   
   # `make test_pp` and `make testall` will be something like this:
-  perl -MExtUtils::Command::MM -e "do 'tool/force-pp.pl'; test_harness(0, 'inc')" t/*t
+  perl -MExtUtils::Command::MM -e "do { local \$@; do 'tool/force-pp.pl'; die \$@; if \$@ }; test_harness(0, 'inc')" t/*t
 
 =item C<< env => \%env >>
 

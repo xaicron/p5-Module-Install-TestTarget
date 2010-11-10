@@ -31,11 +31,17 @@ sub default_test_target {
 sub test_target {
     my ($self, $target, %args) = @_;
     croak 'target must be spesiced at test_target()' unless $target;
-    my $alias = $args{alias}  || '';
+    my $alias = "\n";
+
+    if($args{alias}) {
+        $alias .= qq{$args{alias} :: $target\n\n};
+    }
+    if($Module::Install::AUTHOR && $args{alias_for_author}) {
+        $alias .= qq{$args{alias_for_author} :: $target\n\n};
+    }
 
     my $test = _assemble(_build_command_parts(%args));
 
-    $alias = $alias ? qq{\n$alias :: $target\n\n} : qq{\n};
     $self->postamble(
           $alias
         . qq{$target :: pure_all\n}
@@ -329,6 +335,10 @@ Sets an alias of the test.
 
   # `make test_pp` and `make testall` will be something like this:
   perl -MExtUtils::Command::MM -e "do { local \$@; do 'tool/force-pp.pl'; die \$@; if \$@ }; test_harness(0, 'inc')" t/*t
+
+=item C<< alias_for_author => $name >>
+
+The same as C<alias>, but only enabled if it is in author's environment.
 
 =item C<< env => \%env >>
 

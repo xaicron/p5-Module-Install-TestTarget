@@ -5,10 +5,12 @@ use lib 't/lib';
 use Test::More;
 use t::Util;
 
-ok my $cmd = find_make_test_command(*DATA, 'test_pp', 'testall'), 'find make test command';
+ok my $cmd = find_make_test_command(*DATA, 'test_pp', 'testall', 'xxx'),
+    'find make test command';
 like $cmd->{test_pp}, qr|Foo::Bar|, 'find module';
 ok exists $cmd->{testall}, 'eixsts testall';
-
+ok exists $cmd->{xxx},     'exists xxx (alias_for_author)'
+    or diag explain $cmd;
 done_testing;
 
 __DATA__
@@ -21,8 +23,9 @@ all_from 'lib/MyModule.pm';
 tests 't/*.t';
 
 test_target test_pp => (
-    alias        => 'testall',
-    load_modules => 'Foo::Bar',
+    alias            => 'testall',
+    alias_for_author => 'xxx',
+    load_modules     => 'Foo::Bar',
 );
 
 auto_include;

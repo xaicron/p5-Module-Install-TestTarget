@@ -38,7 +38,7 @@ sub find_make_test_command {
         open my $fh, '<', 'Makefile' or die "Cannot open 'Makefile' for reading: $!";
         my $regex = _regex(keys %$target);
         while (<$fh>) {
-            next unless /^($regex) :: (?:pure_all|$regex)/;
+            next unless /^ ($regex) \s+ :: \s+ (?:pure_all|$regex) /xms;
             $commands->{$1} = scalar <$fh>;
             delete $target->{$1};
             my @target = keys %$target;

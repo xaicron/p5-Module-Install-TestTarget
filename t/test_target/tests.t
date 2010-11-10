@@ -5,9 +5,11 @@ use lib 't/lib';
 use Test::More;
 use t::Util;
 
-ok my $cmd = find_make_test_command(*DATA, 'extends_test'), 'find make test command';
+my $cmd = find_make_test_command(*DATA, 'extends_test');
+ok $cmd, 'find make test command';
+note 'extends_test: ', $cmd->{extends_test} || '';
 like $cmd->{extends_test}, qr|t/foo.t|, 'find tests';
-
+like $cmd->{extends_test}, qr|"t/foo.t"|, 'quoted correctly';
 done_testing;
 
 __DATA__

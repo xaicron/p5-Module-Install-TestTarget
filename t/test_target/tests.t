@@ -25,7 +25,6 @@ test_target extends_test => (
     tests => 't/foo.t',
 );
 
-auto_include;
 WriteAll;
 @@ lib/MyModule.pm
 package MyModule;

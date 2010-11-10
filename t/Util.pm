@@ -2,9 +2,11 @@ package t::Util;
 
 use strict;
 use warnings;
+use Test::Builder;
 use File::Temp qw/tempdir/;
 use File::Path qw/mkpath/;
 use File::Basename qw/dirname/;
+use File::Spec;
 use Cwd;
 use Config;
 use base qw(Exporter);
@@ -18,14 +20,17 @@ our @EXPORT = qw/find_make_test_command unpack_tree build run_make DMAKE NMAKE/;
 sub find_make_test_command {
     my ($fh, @target) = @_;
     my $target = +{ map { $_ => 1 } @target, qw(test test_dynamic) };
-    
+
+    local $ENV{PERL5LIB} = join $Config{path_sep},
+        map { File::Spec->rel2abs($_) } @INC;
+
     my $cwd = getcwd;
     my $tmpdir = tempdir CLEANUP => 1;
-    
+
     chdir $tmpdir or die $!;
-    
+
     unpack_tree($fh);
-    
+
     my $make_test_commands = eval {
         build($cwd);
 
@@ -43,24 +48,24 @@ sub find_make_test_command {
         return $commands;
     };
     chdir $cwd or die $!;
-    
+
     die $@ if $@;
-    
+
     return $make_test_commands;
 }
 
 sub build {
     my $distdir = shift;
     die "Makefile.PL not found" unless -f 'Makefile.PL';
-    _addinc("$distdir/blib/lib");
-    run_cmd(qq{$^X Makefile.PL "$distdir/lib"});
+    my $tb = Test::Builder->new;
+    $tb->note( run_cmd(qq{$^X Makefile.PL}) );
     run_make();
 }
 
 sub run_cmd {
     my ($cmd) = @_;
     my $result = `$cmd`;
-    die "$cmd failed ($result)" if $?;
+    die "`$cmd` failed ($result)" if $?;
     return $result;
 }
 
@@ -90,24 +95,12 @@ sub unpack_tree {
         unless (-e $dir) {
             mkpath($dir) or die "Cannot mkpath '$dir': $!";
         }
-        
+
         my $content = $data->{$path};
         open my $out, '>', $path or die "Cannot open '$path' for writing: $!";
         print $out $content;
         close $out;
     }
-}
-
-sub _addinc {
-    my ($path) = @_;
-    my $file = 'Makefile.PL';
-    open my $fh, '<', $file or die $!;
-    my $data = do { local $/; <$fh> };
-    close $fh;
-    open $fh, '>', $file or die $!;
-    print $fh "use lib qw($path);\n";
-    print $fh $data;
-    close $fh;
 }
 
 sub _regex {

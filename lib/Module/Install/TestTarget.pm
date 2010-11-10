@@ -62,7 +62,11 @@ sub _build_command_parts {
     my %test;
     $test{includes} = @{$args{includes}} ? join '', map { qq|"-I$_" | } @{$args{includes}} : '';
     $test{load_modules}  = @{$args{load_modules}}  ? join '', map { qq|"-M$_" | } @{$args{load_modules}}  : '';
-    $test{tests}    = @{$args{tests}}    ? join '', map { qq|"$_" |   } @{$args{tests}}    : '$(TEST_FILES)';
+
+    $test{tests} =  @{$args{tests}}
+        ? join '', map { qq|"$_" | } @{$args{tests}}
+        : '$(TEST_FILES)';
+
     for my $key (qw/run_on_prepare run_on_finalize/) {
         $test{$key} = @{$args{$key}} ? join '', map { qq|do { local \$@; do '$_'; die \$@ if \$@ }; | } @{$args{$key}} : '';
         $test{$key} = _quote($test{$key});
@@ -119,7 +123,11 @@ sub _assemble {
     $command =~ s/("- \S+? ")/$args{includes}$args{load_modules}$1/xms;
 
     # inject snipetts in the one-liner
-    $command =~ s{("-e" \s+ ") (.+) (")}{
+    $command =~ s{
+        ( "-e" \s+ ")          # start the one liner
+        ( (?: [^"] | \\ . )+ ) # body of the one liner
+        ( " )                  # end the one liner
+     }{
         join '', $1,
             $args{env},
             $args{run_on_prepare},

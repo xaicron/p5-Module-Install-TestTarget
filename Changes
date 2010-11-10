@@ -1,8 +1,8 @@
 Revision history for Perl extension Module::Install::TestTarget
 
-(next release)
-    - add 'alias_for_author' option for author's test targets
-    - fix 'tests' option
+0.14    Wed Nov 10 20:55:47 2010
+        - add 'alias_for_author' option for author's test targets
+        - fix 'tests' option
 
 0.13    Sun Nov  7 15:08:45 2010
         - fixed syntax error for run_on_finalize or insert_on_finalize.

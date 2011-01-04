@@ -1,5 +1,8 @@
 Revision history for Perl extension Module::Install::TestTarget
 
+0.16    Tue Jan  4 22:02:02 2011
+        - removed Module::Install::ExtendsMakeTest on this package
+
 0.15    Tue Nov 16 01:38:20 2010
         - maybe fix failing test
 

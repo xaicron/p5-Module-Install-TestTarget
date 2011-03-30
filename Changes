@@ -1,5 +1,8 @@
 Revision history for Perl extension Module::Install::TestTarget
 
+0.17    Wed Mar 30 20:24:13 2011
+        - maybe fixed dmake issue (reported by gfx++)
+
 0.16    Tue Jan  4 22:02:02 2011
         - removed Module::Install::ExtendsMakeTest on this package
 

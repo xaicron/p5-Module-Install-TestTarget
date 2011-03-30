@@ -107,7 +107,7 @@ sub _quote {
     $code =~ s/\n/ /g;
     if ($^O eq 'MSWin32') {
         $code =~ s/\\\$\$/\$\$/g;
-        if ($Config{make} eq 'dmake') {
+        if ($Config{make} =~ /dmake/) {
             $code =~ s/{/{{/g;
             $code =~ s/}/}}/g;
         }

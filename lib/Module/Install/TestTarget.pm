@@ -240,7 +240,7 @@ Test::Memcached)
 
 =head1 FUNCTIONS
 
-=head2 test_taget($target, %args)
+=head2 test_target($target, %args)
 
 Defines a new test target with I<%args>.
 
@@ -252,7 +252,7 @@ I<%args> are:
 
 Sets include paths.
 
-  test_taget foo => (
+  test_target foo => (
       includes => ['/path/to/inc'],
   );
 
@@ -263,7 +263,7 @@ Sets include paths.
 
 Sets modules which are loaded before running C<test_harness()>.
 
-  test_taget foo => (
+  test_target foo => (
       load_modules => ['Foo', 'Bar::Baz'],
   );
 
@@ -274,7 +274,7 @@ Sets modules which are loaded before running C<test_harness()>.
 
 Sets scripts to run before running C<test_harness()>.
 
-  test_taget foo => (
+  test_target foo => (
       run_on_prepare => ['tool/run_on_prepare.pl'],
   );
 
@@ -287,7 +287,7 @@ Sets scripts to run after running C<test_harness()>.
 
   use inc::Module::Install;
   tests 't/*t';
-  test_taget foo => (
+  test_target foo => (
       run_on_after=> ['tool/run_on_after.pl'],
   );
 
@@ -300,7 +300,7 @@ Sets perl codes to run before running C<test_harness()>.
 
   use inc::Module::Install;
   tests 't/*t';
-  test_taget foo => (
+  test_target foo => (
       insert_on_prepare => ['print scalar localtime , "\n"', sub { system qw/cat README/ }],
   );
 
@@ -315,7 +315,7 @@ Sets perl codes to run after running C<test_harness()>.
 
   use inc::Module::Install;
   tests 't/*t';
-  test_taget foo => (
+  test_target foo => (
       insert_on_finalize => ['print scalar localtime , "\n"', sub { system qw/cat README/ }],
   );
 
@@ -328,7 +328,7 @@ The perl codes runs run_on_finalize runs later.
 
 Sets an alias of the test.
 
-  test_taget test_pp => (
+  test_target test_pp => (
       run_on_prepare => 'tool/force-pp.pl',
       alias          => 'testall',
   );
@@ -344,7 +344,7 @@ The same as C<alias>, but only enabled if it is in author's environment.
 
 Sets environment variables.
 
-  test_taget foo => (
+  test_target foo => (
       env => {
           FOO => 'bar',
       },
@@ -357,7 +357,7 @@ Sets environment variables.
 
 Sets test files to run.
 
-  test_taget foo => (
+  test_target foo => (
       tests  => ['t/foo.t', 't/bar.t'],
       env    => { USE_FOO => 1 },
   );
@@ -371,7 +371,7 @@ Sets test files to run.
 
 Override the default `make test` with I<%args>.
 
-Same argument as C<test_taget()>, but `target` and `alias` are not allowed.
+Same argument as C<test_target()>, but `target` and `alias` are not allowed.
 
 =head1 AUTHOR
 

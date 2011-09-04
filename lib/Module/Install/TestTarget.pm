@@ -281,18 +281,18 @@ Sets scripts to run before running C<test_harness()>.
   # `make foo` will be something like this:
   perl -MExtUtils::Command::MM -e "do { local \$@; do 'tool/run_on_prepare.pl; die \$@ if \$@ }; test_harness(0, 'inc')" t/*t
 
-=item C<< run_on_prepare => \@scripts >>
+=item C<< run_on_finalize => \@scripts >>
 
 Sets scripts to run after running C<test_harness()>.
 
   use inc::Module::Install;
   tests 't/*t';
   test_target foo => (
-      run_on_after=> ['tool/run_on_after.pl'],
+      run_on_finalize => ['tool/run_on_after.pl'],
   );
 
   # `make foo` will be something like this:
-  perl -MExtUtils::Command::MM -e "do { local \$@; do 'tool/run_on_after.pl; die \$@ if \$@ }; test_harness(0, 'inc')" t/*t
+  perl -MExtUtils::Command::MM -e "test_harness(0, 'inc'); do { local \$@; do 'tool/run_on_after.pl; die \$@ if \$@ };" t/*t
 
 =item C<< insert_on_prepare => \@codes >>
 

@@ -7,13 +7,13 @@ use t::Util;
 
 ok my $cmd = find_make_test_command(*DATA, 'extends_test'), 'find make test command';
 if (DMAKE) {
-    like $cmd->{extends_test}, qr|do {{ local \$\$@; do './tool/bar.pl'; die \$\$@ if \$\$@ }};|, 'find after run scripts';
+    like $cmd->{extends_test}, qr|do \{\{ local \$\$@; do './tool/bar.pl'; die \$\$@ if \$\$@ }};|, 'find after run scripts';
 }
 elsif (NMAKE) {
-    like $cmd->{extends_test}, qr|do { local \$\$@; do './tool/bar.pl'; die \$\$@ if \$\$@ };|, 'find after run scripts';
+    like $cmd->{extends_test}, qr|do \{ local \$\$@; do './tool/bar.pl'; die \$\$@ if \$\$@ };|, 'find after run scripts';
 }
 else {
-    like $cmd->{extends_test}, qr|do { local \\\$\$@; do './tool/bar.pl'; die \\\$\$@ if \\\$\$@ };|, 'find after run scripts';
+    like $cmd->{extends_test}, qr|do \{ local \\\$\$@; do './tool/bar.pl'; die \\\$\$@ if \\\$\$@ };|, 'find after run scripts';
 }
 
 done_testing;

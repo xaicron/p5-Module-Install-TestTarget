@@ -8,16 +8,16 @@ use t::Util;
 ok my $cmd = find_make_test_command(*DATA, 'extends_test'), 'find make test command';
 like $cmd->{extends_test}, qr|system.+cat.+Makefile\.PL|, 'find after run coderef';
 if (DMAKE) {
-    like $cmd->{extends_test}, qr|sub {{ print scalar localtime }}->\(\); |, 'find after run code';
-    like $cmd->{extends_test}, qr|\$\$ENV{{__TEST__}} = 1|, 'find escaped sigil';
+    like $cmd->{extends_test}, qr|sub \{\{ print scalar localtime }}->\(\); |, 'find after run code';
+    like $cmd->{extends_test}, qr|\$\$ENV\{\{__TEST__}} = 1|, 'find escaped sigil';
 }
 elsif (NMAKE) {
-    like $cmd->{extends_test}, qr|sub { print scalar localtime }->\(\); |, 'find after run code';
-    like $cmd->{extends_test}, qr|\$\$ENV{__TEST__} = 1|, 'find escaped sigil';
+    like $cmd->{extends_test}, qr|sub \{ print scalar localtime }->\(\); |, 'find after run code';
+    like $cmd->{extends_test}, qr|\$\$ENV\{__TEST__} = 1|, 'find escaped sigil';
 }
 else {
-    like $cmd->{extends_test}, qr|sub { print scalar localtime }->\(\); |, 'find after run code';
-    like $cmd->{extends_test}, qr|\\\$\$ENV{__TEST__} = 1|, 'find escaped sigil';
+    like $cmd->{extends_test}, qr|sub \{ print scalar localtime }->\(\); |, 'find after run code';
+    like $cmd->{extends_test}, qr|\\\$\$ENV\{__TEST__} = 1|, 'find escaped sigil';
 }
 
 done_testing;
